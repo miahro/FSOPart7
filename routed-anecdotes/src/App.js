@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+import { useField } from './hooks'
+
 import {
   Routes,
   Route,
@@ -65,48 +67,51 @@ const Footer = () => (
   </div>
 )
 
-const CreateNew = (props) => {
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
 
+const CreateNew = (props) => {
+  const content = useField('content')
+  const author = useField('author')
+  const info = useField('info')
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log(e)
-    console.log(props)
+  const handleSubmit = (event) => {
+    console.log(content.value, author.value, info.value)
+    event.preventDefault()
     props.addNew({
-      content,
-      author,
-      info,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0
     })
     navigate("/")
   }
 
+  const handleReset = () => {
+    content.onReset()
+    author.onReset()
+    info.onReset()
+  }
+
   return (
     <div>
-      <h2>create a new anecdote</h2>
       <form onSubmit={handleSubmit}>
-        <div>
-          content
-          <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
-        </div>
-        <div>
-          author
-          <input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
-        </div>
-        <div>
-          url for more info
-          <input name='info' value={info} onChange={(e)=> setInfo(e.target.value)} />
-        </div>
-        <button>create</button>
+        content: 
+        <input  {...content} required/> 
+        <br/> 
+        author:
+        <input {...author} required/>
+        <br /> 
+        info:
+        <input {...info} required/>
+        <br></br>
+        <button type="submit">create</button>
+        <button onClick={handleReset} type="button">reset</button>
       </form>
     </div>
   )
-
 }
+
+
 
 const App = () => {
   const [anecdotes, setAnecdotes] = useState([
@@ -126,14 +131,7 @@ const App = () => {
     }
   ])
 
-
   const [notification, setNotification] = useState('')
-
-  const Notify = () => {
-    return (
-      <div>{notification}</div>
-    )
-  }
 
   const match = useMatch('/anecdotes/:id')
 
