@@ -1,8 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-//this initial value is bit unnecessary, but left it to comply with 6.12
-//const initialNotification = 'XInitial value of notification'
-
 const notificationSlice = createSlice({
   name: 'notification',
   initialState: '',
