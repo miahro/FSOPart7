@@ -16,18 +16,19 @@ import {
   removeBlog,
   voteId,
 } from './reducers/blogReducer'
+import { loginUser, logoutUser } from './reducers/userReducer'
 
 const App = () => {
   const dispatch = useDispatch()
 
   const blogs = useSelector((state) => state.blogs)
   const blogsToSort = [...blogs]
+  const user = useSelector((state) => state.user)
 
   console.log('blogs by selector from state', blogs)
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
 
   useEffect(() => {
     dispatch(initializeBlogs())
@@ -37,7 +38,6 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
       console.log('in main App user', user.username)
       blogService.setToken(user.token)
     }
@@ -45,20 +45,16 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    console.log('logging in with', username, password)
-
     try {
       const user = await loginService.login({
         username,
         password,
       })
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-
       blogService.setToken(user.token)
-      setUser(user)
+      dispatch(loginUser(user))
+      blogService.setToken(user.token)
       setUsername('')
       setPassword('')
-      console.log('succesfull login with user: ', user)
       dispatch(setNotification('Login successfull', true, 5))
     } catch (exception) {
       const msg = String(exception.response.data.error)
@@ -71,8 +67,7 @@ const App = () => {
     event.preventDefault()
     console.log('Logging out user', user.username)
     try {
-      window.localStorage.removeItem('loggedBlogappUser')
-      setUser(null)
+      dispatch(logoutUser())
       console.log('succesfull logout')
       dispatch(setNotification('Logout succesfull', true, 5))
     } catch (exception) {
