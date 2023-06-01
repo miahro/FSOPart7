@@ -10,7 +10,12 @@ import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
-import { createBlog, initializeBlogs } from './reducers/blogReducer'
+import {
+  createBlog,
+  initializeBlogs,
+  removeBlog,
+  voteId,
+} from './reducers/blogReducer'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -105,7 +110,10 @@ const App = () => {
   const increaseLikes = async (blogObject, id) => {
     try {
       const updatedBlog = await blogService.update(blogObject, id)
+      console.log('in increaseLikes returned updatedBlog: ', updatedBlog)
       updatedBlog.user = user
+      dispatch(voteId(id))
+      dispatch(initializeBlogs())
       dispatch(
         setNotification(
           `likes increates for ${updatedBlog.title} by ${updatedBlog.author} `,
@@ -124,6 +132,7 @@ const App = () => {
   const deleteBlog = async (id) => {
     try {
       await blogService.remove(id)
+      dispatch(removeBlog(id))
       dispatch(setNotification('Blog deleted', true, 5))
     } catch (exception) {
       const msg = String(exception.response.data.error)
@@ -156,7 +165,6 @@ const App = () => {
             <BlogForm createBlog={addBlog} />
           </Togglable>
           <br></br>
-          {/* {blogsToShow} */}
           {blogsToSort
             .sort((a, b) => b.likes - a.likes)
             .map((blog) => (

@@ -9,6 +9,7 @@ const setToken = (newToken) => {
 
 const getAll = () => {
   const request = axios.get(baseUrl)
+  console.log(baseUrl)
   return request.then((response) => response.data)
 }
 
@@ -22,6 +23,7 @@ const create = async (newObject) => {
 }
 
 const update = async (newObject, id) => {
+  console.log('update newObject ', newObject)
   const response = await axios.put(`${baseUrl}/${id}`, newObject)
   return response.data
 }
@@ -30,7 +32,14 @@ const remove = async (id) => {
   const config = {
     headers: { Authorization: token },
   }
-  console.log('blogservice remove called with id', id, 'and config', config)
+  console.log(
+    'blogservice remove called with id',
+    id,
+    'and config',
+    config,
+    'and url:',
+    `${baseUrl}/${id}`
+  )
   const response = await axios.delete(`${baseUrl}/${id}`, config)
   return response.data
 }
