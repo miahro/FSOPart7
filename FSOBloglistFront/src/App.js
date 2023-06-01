@@ -8,20 +8,25 @@ import './index.css'
 import LoginForm from './components/LoginForm'
 
 import Notification from './components/Notification'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
+import { createBlog, initializeBlogs } from './reducers/blogReducer'
 
 const App = () => {
   const dispatch = useDispatch()
 
-  const [blogs, setBlogs] = useState([])
+  const blogs = useSelector((state) => state.blogs)
+  const blogsToSort = [...blogs]
+
+  console.log('blogs by selector from state', blogs)
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [])
+    dispatch(initializeBlogs())
+  }, [dispatch])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -51,8 +56,9 @@ const App = () => {
       console.log('succesfull login with user: ', user)
       dispatch(setNotification('Login successfull', true, 5))
     } catch (exception) {
+      const msg = String(exception.response.data.error)
       console.log('Login not successfull')
-      dispatch(setNotification('Wrong username or password', false, 5))
+      dispatch(setNotification(`Login not succesfull: ${msg}`, false, 5))
     }
   }
 
@@ -65,17 +71,20 @@ const App = () => {
       console.log('succesfull logout')
       dispatch(setNotification('Logout succesfull', true, 5))
     } catch (exception) {
+      const msg = String(exception.response.data.error)
       console.log('Logout not successfull')
-      dispatch(setNotification('Logout not successfull', false, 5))
+      dispatch(setNotification(`Logout not successfull ${msg}`, false, 5))
     }
   }
 
   const blogFormRef = useRef()
 
   const addBlog = async (blogObject) => {
+    console.log('addBlog blogObject', blogObject)
     try {
       const createdBlog = await blogService.create(blogObject)
-      setBlogs(blogs.concat(createdBlog))
+      console.log('addBlog returnedBlog', createdBlog)
+      dispatch(createBlog(createdBlog))
       blogFormRef.current.toggleVisibility()
       dispatch(
         setNotification(
@@ -85,8 +94,11 @@ const App = () => {
         )
       )
     } catch (exception) {
-      console.log('Creating new blog not succesfull')
-      dispatch(setNotification('Creating new blog not succesfull', false, 5))
+      const msg = String(exception.response.data.error)
+      console.log('Creating new blog not succesfull', msg)
+      dispatch(
+        setNotification(`Creating new blog not succesfull: ${msg}`, false, 5)
+      )
     }
   }
 
@@ -94,7 +106,6 @@ const App = () => {
     try {
       const updatedBlog = await blogService.update(blogObject, id)
       updatedBlog.user = user
-      setBlogs(blogs.map((blog) => (blog.id !== id ? blog : updatedBlog)))
       dispatch(
         setNotification(
           `likes increates for ${updatedBlog.title} by ${updatedBlog.author} `,
@@ -103,17 +114,19 @@ const App = () => {
         )
       )
     } catch (exception) {
-      dispatch(setNotification('Updating blog not successfull', false, 5))
+      const msg = String(exception.response.data.error)
+      dispatch(
+        setNotification(`Updating blog not successfull ${msg}`, false, 5)
+      )
     }
   }
 
   const deleteBlog = async (id) => {
     try {
       await blogService.remove(id)
-      setBlogs(blogs.filter((blog) => blog.id !== id))
       dispatch(setNotification('Blog deleted', true, 5))
-    } catch (exeption) {
-      const msg = String(exeption.response.data.error)
+    } catch (exception) {
+      const msg = String(exception.response.data.error)
       console.log('delete failed ', msg, 'type of', typeof msg)
       dispatch(
         setNotification(`Deleting blog not successfull, ${msg}`, false, 5)
@@ -143,7 +156,8 @@ const App = () => {
             <BlogForm createBlog={addBlog} />
           </Togglable>
           <br></br>
-          {blogs
+          {/* {blogsToShow} */}
+          {blogsToSort
             .sort((a, b) => b.likes - a.likes)
             .map((blog) => (
               <Blog
