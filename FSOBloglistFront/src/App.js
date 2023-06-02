@@ -22,10 +22,11 @@ import {
   logoutUser,
   inializeStoredUser,
 } from './reducers/userReducer'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Link } from 'react-router-dom'
 import { setUsers } from './reducers/usersReducer'
 import Users from './components/Users'
 import User from './components/User'
+import { Table } from 'react-bootstrap'
 //import { all } from 'axios'
 //import { useReducer } from 'react'
 
@@ -37,9 +38,9 @@ const App = () => {
 
   const user = useSelector((state) => state.user)
   const users = useSelector((state) => state.users)
-  console.log('users by selector from state', users)
+  //console.log('users by selector from state', users)
 
-  console.log('blogs by selector from state', blogs)
+  // console.log('blogs by selector from state', blogs)
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -50,18 +51,18 @@ const App = () => {
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    console.log('in useEffect loggedUserJSON', loggedUserJSON)
+    //console.log('in useEffect loggedUserJSON', loggedUserJSON)
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       dispatch(inializeStoredUser(user))
-      console.log('in main App user', user.username)
+      //console.log('in main App user', user.username)
       blogService.setToken(user.token)
     }
   }, [])
 
   useEffect(() => {
     dispatch(setUsers())
-    console.log('in users useEffect users', users)
+    //console.log('in users useEffect users', users)
   }, [])
 
   const handleLogin = async (event) => {
@@ -159,35 +160,31 @@ const App = () => {
     }
   }
 
-  // const Users = () => (
-  //   <div>
-  //     <h2>About anecdote app</h2>
-  //     <p>According to Wikipedia:</p>
-
-  //     <em>
-  //       An anecdote is a brief, revealing account of an individual person or an
-  //       incident. Occasionally humorous, anecdotes differ from jokes because
-  //       their primary purpose is not simply to provoke laughter but to reveal a
-  //       truth more general than the brief tale itself, such as to characterize a
-  //       person by delineating a specific quirk or trait, to communicate an
-  //       abstract idea about a person, place, or thing through the concrete
-  //       details of a short narrative. An anecdote is a story with a point.
-  //     </em>
-
-  //     <p>
-  //       Software engineering is full of excellent anecdotes, at this app you can
-  //       find the best and add more.
-  //       {typeof users}
-  //     </p>
-  //   </div>
-  // )
-
   const Main = () => (
     <div>
       <Togglable buttonLabel="create blog" ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
-      {blogsToSort
+      <Table striped>
+        <tbody>
+          {blogsToSort
+            .sort((a, b) => b.likes - a.likes)
+            .map((blog) => (
+              <tr key={blog.id}>
+                <td>
+                  <Link to={`/blogs/${blog.id}`}>
+                    {blog.title} &nbsp; {blog.author}
+                  </Link>
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </Table>
+    </div>
+  )
+
+  {
+    /* {blogs
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
           <Blog
@@ -197,9 +194,14 @@ const App = () => {
             blogToBeDeleted={deleteBlog}
             loggedInUser={user.username}
           />
-        ))}
-    </div>
-  )
+        ))} */
+  }
+
+  //remove this dummy part
+  // if (user.name === 'kukkuu') {
+  //   deleteBlog(100)
+  //   increaseLikes(100)
+  // }
 
   return (
     <div className="container">
@@ -224,6 +226,16 @@ const App = () => {
             <Route path="/users" element={<Users users={users} />} />
             <Route path="/" element={<Main />} />
             <Route path="/users/:userid" element={<User />} />
+            <Route
+              path="/blogs/:blogid"
+              element={
+                <Blog
+                  updateBlog={increaseLikes}
+                  blogToBeDeleted={deleteBlog}
+                  loggedInUser={user}
+                />
+              }
+            />
           </Routes>
         </div>
       )}

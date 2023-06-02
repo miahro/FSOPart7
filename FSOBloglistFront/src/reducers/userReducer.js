@@ -8,9 +8,9 @@ const userSlice = createSlice({
   initialState: loggedInUser,
   reducers: {
     Login(state, action) {
-      console.log('user.reducer with state and action', state, action)
+      //      console.log('user.reducer with state and action', state, action)
       const newUser = JSON.stringify(action.payload)
-      console.log('newuser: ', newUser)
+      //     console.log('newuser: ', newUser)
       window.localStorage.setItem('loggedBlogappUser', newUser)
       return action.payload
       // return {
@@ -29,12 +29,12 @@ const userSlice = createSlice({
       return ''
     },
     Initialize(state, action) {
-      console.log(
-        'Initialize called with state, action',
-        state,
-        action,
-        action.payload
-      )
+      // console.log(
+      //   'Initialize called with state, action',
+      //   state,
+      //   action,
+      //   action.payload
+      // )
       // const storedUser2 = window.localStorage.getItem('loggedBlogappuser')
       // const loggedInUser2 = storedUser && JSON.parse(storedUser2)
       //console.log('loggedInUser in Initialize', loggedInUser2, storedUser2)
@@ -58,7 +58,7 @@ export const logoutUser = () => {
 }
 
 export const inializeStoredUser = (loggedInUser2) => {
-  console.log('initializeStoredUser called', loggedInUser2)
+  //  console.log('initializeStoredUser called', loggedInUser2)
   //  const storedUser2 = window.localStorage.getItem('loggedBlogappuser')
   //  const loggedInUser2 = storedUser && JSON.parse(storedUser2)
   return async (dispatch) => {

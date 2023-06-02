@@ -6,12 +6,12 @@ const usersSlice = createSlice({
   initialState: [],
   reducers: {
     initializeUsers(state, action) {
-      console.log(
-        'initializeUsers called with state, action, action.payload',
-        state,
-        action,
-        action.payload
-      )
+      // console.log(
+      //   'initializeUsers called with state, action, action.payload',
+      //   state,
+      //   action,
+      //   action.payload
+      // )
       return action.payload
     },
   },
