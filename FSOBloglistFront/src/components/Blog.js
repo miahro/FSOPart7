@@ -1,12 +1,14 @@
 //import { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 
 const Blog = ({ updateBlog, blogToBeDeleted, loggedInUser }) => {
   const id = useParams().blogid
   const selectedBlog = useSelector((state) => {
     return state.blogs.find((selectedBlog) => selectedBlog.id === id)
   })
+
+  const navigate = useNavigate()
 
   console.log('in component blog selectedBlog', selectedBlog)
   console.log('loggedInUser', loggedInUser)
@@ -45,11 +47,12 @@ const Blog = ({ updateBlog, blogToBeDeleted, loggedInUser }) => {
     updateBlog(updatedBlogObject, id)
   }
 
-  // const deleteBlog = (event) => {
-  //   event.preventDefault()
-  //   console.log('remove clicked')
-  //   blogToBeDeleted(blog.id)
-  // }
+  const deleteBlog = (event) => {
+    event.preventDefault()
+    console.log('remove clicked')
+    blogToBeDeleted(selectedBlog.id)
+    navigate('/')
+  }
 
   return (
     <div>
@@ -61,7 +64,13 @@ const Blog = ({ updateBlog, blogToBeDeleted, loggedInUser }) => {
       <button onClick={like} id="like" className="like">
         like
       </button>
-      <p>added by {selectedBlog.user.name}</p>
+      <br></br>
+      added by {selectedBlog.user.name}
+      {selectedBlog.user.username === loggedInUser.username ? (
+        <button onClick={deleteBlog} id="remove">
+          remove
+        </button>
+      ) : null}
     </div>
     // <div className="blog" style={blogStyle}>
     //   <div className="hidden" style={hideWhenVisible}>

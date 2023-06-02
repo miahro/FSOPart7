@@ -27,6 +27,7 @@ import { setUsers } from './reducers/usersReducer'
 import Users from './components/Users'
 import User from './components/User'
 import { Table } from 'react-bootstrap'
+import styled from 'styled-components'
 //import { all } from 'axios'
 //import { useReducer } from 'react'
 
@@ -44,6 +45,15 @@ const App = () => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+
+  const Navigation = styled.div`
+    background: lightGrey;
+    padding: 1em;
+  `
+
+  const padding = {
+    padding: 5,
+  }
 
   useEffect(() => {
     dispatch(initializeBlogs())
@@ -147,6 +157,7 @@ const App = () => {
   }
 
   const deleteBlog = async (id) => {
+    console.log('in deleteBlog id', id)
     try {
       await blogService.remove(id)
       dispatch(removeBlog(id))
@@ -203,8 +214,52 @@ const App = () => {
   //   increaseLikes(100)
   // }
 
+  // const Nav = () => (
+  //   <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+  //     <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+  //     <Navbar.Collapse id="responsive-navbar-nav">
+  //       <Nav className="me-auto">
+  //         <Nav.Link href="#" as="span">
+  //           <Link style={padding} to="/">
+  //             blogs
+  //           </Link>
+  //         </Nav.Link>
+  //         <Nav.Link href="#" as="span">
+  //           <Link style={padding} to="/users">
+  //             users
+  //           </Link>
+  //         </Nav.Link>
+  //         {/* <Nav.Link href="#" as="span">
+  //           {user ? (
+  //             <em style={padding}>{user} logged in</em>
+  //           ) : (
+  //             <Link style={padding} to="/login">
+  //               login
+  //             </Link>
+  //           )}
+  //         </Nav.Link> */}
+  //       </Nav>
+  //     </Navbar.Collapse>
+  //   </Navbar>
+  // )
+
   return (
     <div className="container">
+      <Navigation>
+        {' '}
+        <Link style={padding} to="/">
+          blogs
+        </Link>
+        <Link style={padding} to="/users">
+          users
+        </Link>
+        {user ? user.name : ''}
+        {user && (
+          <button style={padding} onClick={handleLogout}>
+            Logout
+          </button>
+        )}
+      </Navigation>
       <Notification></Notification>
       {!user && (
         <LoginForm
@@ -217,10 +272,10 @@ const App = () => {
       )}
       {user && (
         <div>
-          <h2>blogs</h2>
+          <h2>blog app</h2>
           {user.name} logged in &nbsp;
           <br></br>
-          <button onClick={handleLogout}>Logout</button>
+          {/* <button onClick={handleLogout}>Logout</button> */}
           <br></br>
           <Routes>
             <Route path="/users" element={<Users users={users} />} />
