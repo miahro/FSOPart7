@@ -2,7 +2,6 @@ const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const userExtractor = require('../utils/middleware').userExtractor
 
-
 // functionality replaced with middleware.tokenExractor
 // const getTokenFrom = request => {
 //   const authorization = request.get('authorization')
@@ -13,8 +12,7 @@ const userExtractor = require('../utils/middleware').userExtractor
 // }
 
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog
-    .find({}).populate('user', { username: 1, name: 1 })
+  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
   response.json(blogs)
 })
 
@@ -24,18 +22,24 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
   const author = body.author
   const url = body.url
   const likes = body.likes || 0
-  if (!title) {return response.status(400).json({ error: 'no title' }).end()}
-  if (!url) {return response.status(400).end({ error: 'no url' })}
+  if (!title) {
+    return response.status(400).json({ error: 'no title' }).end()
+  }
+  if (!url) {
+    return response.status(400).end({ error: 'no url' })
+  }
 
   const user = request.user
-  if (!user) {return response.status(404).json({ error: 'user not found' })}
+  if (!user) {
+    return response.status(404).json({ error: 'user not found' })
+  }
 
   const blog = new Blog({
     title: title,
     author: author,
     url: url,
     likes: likes,
-    user: user.id
+    user: user.id,
   })
   const savedBlog = await blog.save()
   savedBlog.populate('user', { username: 1, name: 1 })
@@ -43,6 +47,22 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
   await user.save()
 
   response.status(201).json(savedBlog)
+})
+
+blogsRouter.post('/:id/comments', async (request, response) => {
+  const comment = request.body.comment
+  console.log('comment', comment)
+  if (!comment) {
+    return response.status(400).json({ error: 'comment cannot be empty' }).end()
+  }
+
+  const blog = await Blog.findById(request.params.id)
+  if (!blog) {
+    return response.status(404).json({ error: 'blog not found' })
+  }
+  blog.comments.push(comment)
+  await blog.save()
+  response.status(201).json(blog).end()
 })
 
 blogsRouter.delete('/:id', userExtractor, async (request, response) => {
@@ -54,7 +74,9 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
   const blogCreator = blog.user
 
   const user = request.user
-  if (!user) {return response.status(404).json({ error: 'token invalid' })}
+  if (!user) {
+    return response.status(404).json({ error: 'token invalid' })
+  }
 
   if (blogCreator.toString() === user.id) {
     await Blog.findByIdAndRemove(request.params.id)
@@ -72,17 +94,19 @@ blogsRouter.put('/:id', async (request, response) => {
   const likes = body.likes || 0
   const user = body.user
 
-
-
-  if (!title) {return response.status(400).end()}
-  if (!url) {return response.status(400).end()}
+  if (!title) {
+    return response.status(400).end()
+  }
+  if (!url) {
+    return response.status(400).end()
+  }
 
   const blog = {
     title: title,
     author: author,
     url: url,
     likes: likes,
-    user: user
+    user: user,
   }
   console.log(user)
   console.log('put blog', blog)

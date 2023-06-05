@@ -9,7 +9,7 @@ const setToken = (newToken) => {
 
 const getAll = () => {
   const request = axios.get(baseUrl)
-  console.log(baseUrl)
+  //console.log(baseUrl)
   return request.then((response) => response.data)
 }
 
@@ -18,12 +18,12 @@ const create = async (newObject) => {
     headers: { Authorization: token },
   }
   const response = await axios.post(baseUrl, newObject, config)
-  console.log('blogservices.create response.data', response.data)
+  //console.log('blogservices.create response.data', response.data)
   return response.data
 }
 
 const update = async (newObject, id) => {
-  console.log('update newObject ', newObject)
+  //console.log('update newObject ', newObject)
   const response = await axios.put(`${baseUrl}/${id}`, newObject)
   return response.data
 }
@@ -32,16 +32,34 @@ const remove = async (id) => {
   const config = {
     headers: { Authorization: token },
   }
-  console.log(
-    'blogservice remove called with id',
-    id,
-    'and config',
-    config,
-    'and url:',
-    `${baseUrl}/${id}`
-  )
+  // console.log(
+  //   'blogservice remove called with id',
+  //   id,
+  //   'and config',
+  //   config,
+  //   'and url:',
+  //   `${baseUrl}/${id}`
+  // )
   const response = await axios.delete(`${baseUrl}/${id}`, config)
   return response.data
 }
 
-export default { getAll, setToken, create, update, remove }
+const newComment = async (id, comment) => {
+  //const url = `${baseUrl}/${id}/comments`
+  // console.log(
+  //   'blogservice comment called with id',
+  //   id,
+  //   ' and comment',
+  //   comment,
+  //   'and url:',
+  //   url,
+  //   typeof url
+  // )
+  const response = await axios.post(`${baseUrl}/${String(id)}/comments`, {
+    comment: comment,
+  })
+  //console.log('in blogservices.newComment', response)
+  return response.data
+}
+
+export default { getAll, setToken, create, update, remove, newComment }

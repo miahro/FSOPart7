@@ -1,38 +1,13 @@
-//import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
 
-const Blog = ({ updateBlog, blogToBeDeleted, loggedInUser }) => {
+const Blog = ({ updateBlog, blogToBeDeleted, loggedInUser, addComment }) => {
   const id = useParams().blogid
   const selectedBlog = useSelector((state) => {
     return state.blogs.find((selectedBlog) => selectedBlog.id === id)
   })
 
   const navigate = useNavigate()
-
-  console.log('in component blog selectedBlog', selectedBlog)
-  console.log('loggedInUser', loggedInUser)
-  console.log(blogToBeDeleted)
-  //console.log('in component Blog, blog', blog)
-
-  // const blogStyle = {
-  //   paddingTop: 10,
-  //   paddingLeft: 2,
-  //   paddingBottom: 10,
-  //   border: 'solid',
-  //   borderColor: 'blue',
-  //   borderWidth: 2,
-  //   marginBottom: 5,
-  // }
-
-  // const [visible, setVisible] = useState(false)
-
-  // const hideWhenVisible = { display: visible ? 'none' : '' }
-  // const showWhenVisible = { display: visible ? '' : 'none' }
-
-  // const toggleVisibility = () => {
-  //   setVisible(!visible)
-  // }
 
   const like = (event) => {
     const id = selectedBlog.id
@@ -49,14 +24,20 @@ const Blog = ({ updateBlog, blogToBeDeleted, loggedInUser }) => {
 
   const deleteBlog = (event) => {
     event.preventDefault()
-    console.log('remove clicked')
     blogToBeDeleted(selectedBlog.id)
     navigate('/')
   }
 
-  return (
+  const handleComment = (event) => {
+    event.preventDefault()
+    addComment({ id: selectedBlog.id, comment: event.target.newComment.value })
+  }
+
+  const BlogDetails = () => (
     <div>
-      <h2>{selectedBlog.title}</h2>
+      <h2>
+        {selectedBlog.title} {selectedBlog.author}
+      </h2>
       <br></br>
       <a href={selectedBlog.url}>{selectedBlog.url}</a>
       <br></br>
@@ -71,36 +52,28 @@ const Blog = ({ updateBlog, blogToBeDeleted, loggedInUser }) => {
           remove
         </button>
       ) : null}
+      <h2>comments</h2>
+      <form onSubmit={handleComment}>
+        <input type="text" name="newComment" />
+        <button type="submit">add comment</button>
+      </form>
+      <ul>
+        {selectedBlog.comments.map((comment, index) => (
+          <li key={index}> {comment} </li>
+        ))}
+      </ul>
     </div>
-    // <div className="blog" style={blogStyle}>
-    //   <div className="hidden" style={hideWhenVisible}>
-    //     {blog.title} &nbsp;
-    //     {blog.author} &nbsp;
-    //     <button onClick={toggleVisibility} id="view">
-    //       view
-    //     </button>
-    //   </div>
-    //   <div style={showWhenVisible} className="visible">
-    //     {blog.title} &nbsp;
-    //     {blog.author} <br></br>
-    //     <button onClick={toggleVisibility}>hide</button> <br></br>
-    //     {blog.url} <br></br>
-    //     likes {blog.likes} &nbsp;
-    //     <button onClick={like} id="like" className="like">
-    //       like
-    //     </button>
-    //     <br></br>
-    //     {blog.user.name} <br></br>
-    //     <div className="optionalRemove">
-    //       {blog.user.username === loggedInUser ? (
-    //         <button onClick={deleteBlog} id="remove">
-    //           remove
-    //         </button>
-    //       ) : null}
-    //     </div>
-    //   </div>
-    // </div>
   )
+
+  if (!selectedBlog) {
+    navigate('/')
+  } else {
+    return (
+      <div>
+        <BlogDetails />
+      </div>
+    )
+  }
 }
 
 export default Blog

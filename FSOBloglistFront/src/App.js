@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
-//import usersService from './services/users'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 import './index.css'
@@ -16,6 +15,7 @@ import {
   initializeBlogs,
   removeBlog,
   voteId,
+  addCommentBlog,
 } from './reducers/blogReducer'
 import {
   loginUser,
@@ -28,8 +28,6 @@ import Users from './components/Users'
 import User from './components/User'
 import { Table } from 'react-bootstrap'
 import styled from 'styled-components'
-//import { all } from 'axios'
-//import { useReducer } from 'react'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -39,9 +37,6 @@ const App = () => {
 
   const user = useSelector((state) => state.user)
   const users = useSelector((state) => state.users)
-  //console.log('users by selector from state', users)
-
-  // console.log('blogs by selector from state', blogs)
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -61,18 +56,15 @@ const App = () => {
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    //console.log('in useEffect loggedUserJSON', loggedUserJSON)
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       dispatch(inializeStoredUser(user))
-      //console.log('in main App user', user.username)
       blogService.setToken(user.token)
     }
   }, [])
 
   useEffect(() => {
     dispatch(setUsers())
-    //console.log('in users useEffect users', users)
   }, [])
 
   const handleLogin = async (event) => {
@@ -90,21 +82,17 @@ const App = () => {
       dispatch(setNotification('Login successfull', true, 5))
     } catch (exception) {
       const msg = String(exception.response.data.error)
-      console.log('Login not successfull')
       dispatch(setNotification(`Login not succesfull: ${msg}`, false, 5))
     }
   }
 
   const handleLogout = async (event) => {
     event.preventDefault()
-    console.log('Logging out user', user.username)
     try {
       dispatch(logoutUser())
-      console.log('succesfull logout')
       dispatch(setNotification('Logout succesfull', true, 5))
     } catch (exception) {
       const msg = String(exception.response.data.error)
-      console.log('Logout not successfull')
       dispatch(setNotification(`Logout not successfull ${msg}`, false, 5))
     }
   }
@@ -112,10 +100,8 @@ const App = () => {
   const blogFormRef = useRef()
 
   const addBlog = async (blogObject) => {
-    console.log('addBlog blogObject', blogObject)
     try {
       const createdBlog = await blogService.create(blogObject)
-      console.log('addBlog returnedBlog', createdBlog)
       dispatch(createBlog(createdBlog))
       blogFormRef.current.toggleVisibility()
       dispatch(
@@ -127,7 +113,6 @@ const App = () => {
       )
     } catch (exception) {
       const msg = String(exception.response.data.error)
-      console.log('Creating new blog not succesfull', msg)
       dispatch(
         setNotification(`Creating new blog not succesfull: ${msg}`, false, 5)
       )
@@ -137,7 +122,6 @@ const App = () => {
   const increaseLikes = async (blogObject, id) => {
     try {
       const updatedBlog = await blogService.update(blogObject, id)
-      console.log('in increaseLikes returned updatedBlog: ', updatedBlog)
       updatedBlog.user = user
       dispatch(voteId(id))
       dispatch(initializeBlogs())
@@ -157,16 +141,29 @@ const App = () => {
   }
 
   const deleteBlog = async (id) => {
-    console.log('in deleteBlog id', id)
     try {
       await blogService.remove(id)
       dispatch(removeBlog(id))
       dispatch(setNotification('Blog deleted', true, 5))
     } catch (exception) {
       const msg = String(exception.response.data.error)
-      console.log('delete failed ', msg, 'type of', typeof msg)
       dispatch(
         setNotification(`Deleting blog not successfull, ${msg}`, false, 5)
+      )
+    }
+  }
+
+  const addComment = async (idandcomment) => {
+    try {
+      await blogService.newComment(idandcomment.id, idandcomment.comment)
+      dispatch(addCommentBlog(idandcomment))
+      dispatch(
+        setNotification(`Comment ${idandcomment.comment} added`, true, 5)
+      )
+    } catch (exception) {
+      const msg = String(exception.response.data.error)
+      dispatch(
+        setNotification(`Adding comment not successfull, ${msg}`, false, 5)
       )
     }
   }
@@ -194,55 +191,6 @@ const App = () => {
     </div>
   )
 
-  {
-    /* {blogs
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            updateBlog={increaseLikes}
-            blogToBeDeleted={deleteBlog}
-            loggedInUser={user.username}
-          />
-        ))} */
-  }
-
-  //remove this dummy part
-  // if (user.name === 'kukkuu') {
-  //   deleteBlog(100)
-  //   increaseLikes(100)
-  // }
-
-  // const Nav = () => (
-  //   <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-  //     <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-  //     <Navbar.Collapse id="responsive-navbar-nav">
-  //       <Nav className="me-auto">
-  //         <Nav.Link href="#" as="span">
-  //           <Link style={padding} to="/">
-  //             blogs
-  //           </Link>
-  //         </Nav.Link>
-  //         <Nav.Link href="#" as="span">
-  //           <Link style={padding} to="/users">
-  //             users
-  //           </Link>
-  //         </Nav.Link>
-  //         {/* <Nav.Link href="#" as="span">
-  //           {user ? (
-  //             <em style={padding}>{user} logged in</em>
-  //           ) : (
-  //             <Link style={padding} to="/login">
-  //               login
-  //             </Link>
-  //           )}
-  //         </Nav.Link> */}
-  //       </Nav>
-  //     </Navbar.Collapse>
-  //   </Navbar>
-  // )
-
   return (
     <div className="container">
       <Navigation>
@@ -260,6 +208,7 @@ const App = () => {
           </button>
         )}
       </Navigation>
+
       <Notification></Notification>
       {!user && (
         <LoginForm
@@ -275,7 +224,6 @@ const App = () => {
           <h2>blog app</h2>
           {user.name} logged in &nbsp;
           <br></br>
-          {/* <button onClick={handleLogout}>Logout</button> */}
           <br></br>
           <Routes>
             <Route path="/users" element={<Users users={users} />} />
@@ -288,6 +236,7 @@ const App = () => {
                   updateBlog={increaseLikes}
                   blogToBeDeleted={deleteBlog}
                   loggedInUser={user}
+                  addComment={addComment}
                 />
               }
             />

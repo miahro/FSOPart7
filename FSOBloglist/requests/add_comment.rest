@@ -1,0 +1,14 @@
+POST http://localhost:3003/api/blogs/647a003a931f5b20e71a568e/comments HTTP/1.1 
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InN1cGVydXNlcjIiLCJpZCI6IjY0MzdlMTJhOTY5MDdkN2UxMTYzYTJhOSIsImlhdCI6MTY4NTcyOTk0MCwiZXhwIjoxNjg1NzM3MTQwfQ.nzLUrJT-mCp67e8WZevkyIFdS98p2J-I2oBPnALAiB8
+
+{ "comment": "kommentti!"
+}
+
+###
+POST http://localhost:3003/api/blogs/647db23287dbb85fdd1ad9a3/comments HTTP/1.1 
+content-type: application/json
+//Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InN1cGVydXNlcjIiLCJpZCI6IjY0MzdlMTJhOTY5MDdkN2UxMTYzYTJhOSIsImlhdCI6MTY4NTcyOTk0MCwiZXhwIjoxNjg1NzM3MTQwfQ.nzLUrJT-mCp67e8WZevkyIFdS98p2J-I2oBPnALAiB8
+
+{ "comment": "toinen kommentti"
+}

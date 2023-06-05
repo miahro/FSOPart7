@@ -1,8 +1,18 @@
-PUT http://localhost:3003/api/blogs/643ff337d98ce3ab9a725d48 HTTP/1.1 
+PUT http://localhost:3003/api/blogs/643ff3783a5ea73b825a427f HTTP/1.1 
 content-type: application/json
 
-{ "title": "On muutoksen aika",
-  "author": "Paavo",
+{ "title": "on taas aika",
+  "author": "Pave",
   "url": "http://www.fi",
   "likes": 20
+}
+
+###
+PUT http://localhost:3003/api/blogs/643ff3783a5ea73b825a427f HTTP/1.1 
+content-type: application/json
+
+{ "title": "on taas aika",
+  "author": "Pave",
+  "url": "http://www.fi",
+  "likes": 20,
 }
