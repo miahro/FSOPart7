@@ -65,14 +65,14 @@ const Blog = ({ updateBlog, blogToBeDeleted, loggedInUser, addComment }) => {
     </div>
   )
 
-  if (!selectedBlog) {
-    navigate('/')
-  } else {
+  if (selectedBlog) {
     return (
       <div>
         <BlogDetails />
       </div>
     )
+  } else {
+    return <div>{null}</div>
   }
 }
 
