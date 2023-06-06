@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
+import { Button, Form } from 'react-bootstrap'
 
 const Blog = ({ updateBlog, blogToBeDeleted, loggedInUser, addComment }) => {
   const id = useParams().blogid
@@ -41,22 +42,26 @@ const Blog = ({ updateBlog, blogToBeDeleted, loggedInUser, addComment }) => {
       <br></br>
       <a href={selectedBlog.url}>{selectedBlog.url}</a>
       <br></br>
-      {selectedBlog.likes} likes
-      <button onClick={like} id="like" className="like">
+      {selectedBlog.likes} likes &nbsp;
+      <Button variant="primary" onClick={like} id="like" className="like">
         like
-      </button>
+      </Button>
       <br></br>
-      added by {selectedBlog.user.name}
+      added by {selectedBlog.user.name} &nbsp;
       {selectedBlog.user.username === loggedInUser.username ? (
-        <button onClick={deleteBlog} id="remove">
+        <Button variant="primary" onClick={deleteBlog} id="remove">
           remove
-        </button>
+        </Button>
       ) : null}
       <h2>comments</h2>
-      <form onSubmit={handleComment}>
-        <input type="text" name="newComment" />
-        <button type="submit">add comment</button>
-      </form>
+      <Form onSubmit={handleComment}>
+        <Form.Group>
+          <Form.Control type="text" name="newComment" />
+          <Button variant="primary" type="submit">
+            add comment
+          </Button>
+        </Form.Group>
+      </Form>
       <ul>
         {selectedBlog.comments.map((comment, index) => (
           <li key={index}> {comment} </li>

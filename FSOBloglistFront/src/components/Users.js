@@ -7,7 +7,7 @@ const Users = ({ users }) => {
   return (
     <div className="users">
       <h2>Users</h2>
-      <Table>
+      <Table striped>
         {' '}
         <tbody>
           <tr>

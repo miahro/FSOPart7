@@ -26,7 +26,7 @@ import { Routes, Route, Link } from 'react-router-dom'
 import { setUsers } from './reducers/usersReducer'
 import Users from './components/Users'
 import User from './components/User'
-import { Table } from 'react-bootstrap'
+import { Table, Button } from 'react-bootstrap'
 import styled from 'styled-components'
 
 const App = () => {
@@ -52,7 +52,7 @@ const App = () => {
   // `
 
   const padding = {
-    padding: 5,
+    padding: 10,
   }
 
   useEffect(() => {
@@ -132,7 +132,7 @@ const App = () => {
       dispatch(initializeBlogs())
       dispatch(
         setNotification(
-          `likes increates for ${updatedBlog.title} by ${updatedBlog.author} `,
+          `likes increased for ${updatedBlog.title} by ${updatedBlog.author} `,
           true,
           5
         )
@@ -178,6 +178,8 @@ const App = () => {
       <Togglable buttonLabel="create blog" ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
+      <br></br>
+      <h2>Blogs</h2>
       <Table striped>
         <tbody>
           {blogsToSort
@@ -206,11 +208,11 @@ const App = () => {
         <Link style={padding} to="/users">
           users
         </Link>
-        {user ? user.name : ''}
+        {user ? `${user.name}   ` : '  '}
         {user && (
-          <button style={padding} onClick={handleLogout}>
+          <Button variant="primary" style={padding} onClick={handleLogout}>
             Logout
-          </button>
+          </Button>
         )}
       </Navigation>
 
