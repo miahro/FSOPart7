@@ -46,11 +46,6 @@ const App = () => {
     padding: 1em;
   `
 
-  // const Page = styled.div`
-  //   padding: 1em;
-  //   background: papayawhip;
-  // `
-
   const padding = {
     padding: 10,
   }
